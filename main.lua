@@ -242,10 +242,8 @@ do
                 if inPuzzle then
                     local generator = findNearestGenerator()
                     if generator then
+                        generator.Remotes.RE:FireServer()
                         task.wait(Flags.Generator.Delay)
-                        if generator then --for sure
-                            generator.Remotes.RE:FireServer()
-                        end
                     end
                 end
                 task.wait(0.1)
