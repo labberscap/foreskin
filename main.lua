@@ -244,7 +244,7 @@ do
                     if generator then
                         task.wait(Flags.Generator.Delay)
                         if generator then --for sure
-                            v.Remotes.RE:FireServer()
+                            generator.Remotes.RE:FireServer()
                         end
                     end
                 end
