@@ -24,6 +24,7 @@ local Flags = {
         ["NoFootstep"] = false,
         ["SprintEnabled"] = false,
         ["SprintSpeed"] = 0,
+        ["Data"] = {},
     },
     ["Generator"] = {
         ["Delay"] = 3,
@@ -52,21 +53,26 @@ local function inMap()
     local Map = Ingame:FindFirstChild("Map")
     return Map ~= nil
 end
-local function findNearestGenerator(pos)
-    local nearest, maxDist = nil, 10
-    for i, v in Ingame.Map:GetDescendants() do
-        if v.Name == "Generator" then
-            local main = v:FindFirstChild("Main")
-            if main then
-                local dist = (main.Position - pos).Magnitude
-                if dist < maxDist then
-                    nearest = v
-                    maxDist = dist
+local function findNearestGenerator()
+    local Data = Flags.Player.Data
+    if Data and Data.Root then
+        local pos = Data.Root.Position
+        local nearest, maxDist = nil, 10
+        for i, v in Ingame.Map:GetDescendants() do
+            if v.Name == "Generator" then
+                local main = v:FindFirstChild("Main")
+                if main then
+                    local dist = (main.Position - pos).Magnitude
+                    if dist < maxDist then
+                        nearest = v
+                        maxDist = dist
+                    end
                 end
             end
         end
+        return nearest
     end
-    return nearest
+    return nil
 end
 local function findPuzzleGenerator()
     local PuzzleUI = PlayerUI:FindFirstChild("PuzzleUI")
@@ -74,13 +80,14 @@ local function findPuzzleGenerator()
 end
 --
 function Respawn()
-    local Character = Player.Character
-    local Humanoid = Character:WaitForChild("Humanoid")
-    local Root = Character:WaitForChild("HumanoidRootPart")
+    local Data = {}
     --
-    local SpeedMultipliers = Character:WaitForChild("SpeedMultipliers")
+    Data.Character = Player.Character
+    Data.Humanoid = Data.Character:WaitForChild("Humanoid")
+    Data.Root = Data.Character:WaitForChild("HumanoidRootPart")
     --
-    
+    local SpeedMultipliers = Data.Character:WaitForChild("SpeedMultipliers")
+    --
     local BodyGyro = Instance.new("BodyGyro")
     BodyGyro.MaxTorque = Vector3.zero
     BodyGyro.Parent = Root
@@ -134,7 +141,7 @@ function Respawn()
         end
     end))
     table.insert(Connections, RunService.Heartbeat:Connect(function()
-        if not Character or not Character.Parent or not SpeedMultipliers or not SpeedMultipliers.Parent then
+        if not Data.Character or not Data.Character.Parent or not SpeedMultipliers or not SpeedMultipliers.Parent then
             Destroy()
         end
         if Flags.Player.SprintEnabled then
@@ -146,8 +153,10 @@ function Respawn()
         else
             BodyGyro.MaxTorque = Vector3.zero
         end
-        Character:SetAttribute("FootstepsMuted", Flags.Player.NoFootstep or false)
+        Data.Character:SetAttribute("FootstepsMuted", Flags.Player.NoFootstep or false)
     end))
+    --
+    Flags.Player.Data = Data
 end
 function Destroy()
     for i, v in ESP.Objects do
@@ -156,6 +165,7 @@ function Destroy()
     for i, v in Connections do
         v:Disconnect()
     end
+    table.clear(Flags.Player.Data)
     table.clear(Connections)
 end
 
@@ -230,7 +240,7 @@ do
             while Flags.Generator.Solve do
                 local inPuzzle = findPuzzleGenerator()
                 if inPuzzle then
-                    local generator = findNearestGenerator(Root.Position)
+                    local generator = findNearestGenerator()
                     if generator then
                         task.wait(Flags.Generator.Delay)
                         if generator then --for sure
