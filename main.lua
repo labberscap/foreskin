@@ -12,7 +12,6 @@ local Ingame = workspace:WaitForChild("Map").Ingame
 local Survivors = workspace.Players.Survivors
 local Killers = workspace.Players.Killers
 
-
 local Player = Players.LocalPlayer
 local PlayerUI = Player.PlayerGui
 
@@ -53,6 +52,22 @@ local function inMap()
     local Map = Ingame:FindFirstChild("Map")
     return Map ~= nil
 end
+local function findNearestGenerator(pos)
+    local nearest, maxDist = nil, 10
+    for i, v in Ingame.Map:GetDescendants() do
+        if v.Name == "Generator" then
+            local main = v:FindFirstChild("Main")
+            if main then
+                local dist = (main.Position - pos).Magnitude
+                if dist < maxDist then
+                    nearest = v
+                    maxDist = dist
+                end
+            end
+        end
+    end
+    return nearest
+end
 local function findPuzzleGenerator()
     local PuzzleUI = PlayerUI:FindFirstChild("PuzzleUI")
     return PuzzleUI ~= nil
@@ -64,6 +79,8 @@ function Respawn()
     local Root = Character:WaitForChild("HumanoidRootPart")
     --
     local SpeedMultipliers = Character:WaitForChild("SpeedMultipliers")
+    --
+    
     local BodyGyro = Instance.new("BodyGyro")
     BodyGyro.MaxTorque = Vector3.zero
     BodyGyro.Parent = Root
@@ -213,12 +230,11 @@ do
             while Flags.Generator.Solve do
                 local inPuzzle = findPuzzleGenerator()
                 if inPuzzle then
-                    for i, v in Ingame.Map:GetChildren() do
-                        if v.Name == "Generator" then
-                            task.wait(Flags.Generator.Delay)
-                            if findPuzzleGenerator() then
-                                v.Remotes.RE:FireServer()
-                            end
+                    local generator = findNearestGenerator(Root.Position)
+                    if generator then
+                        task.wait(Flags.Generator.Delay)
+                        if generator then --for sure
+                            v.Remotes.RE:FireServer()
                         end
                     end
                 end
