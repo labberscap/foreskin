@@ -11,6 +11,7 @@ local EmoteData = loadstring(game:HttpGet("https://raw.githubusercontent.com/lab
 local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/bocaj111004/ESPLibrary/refs/heads/main/Library.lua"))()
 
 local Ingame = workspace:WaitForChild("Map").Ingame
+local Spectating = workspace.Players.Spectating
 local Survivors = workspace.Players.Survivors
 local Killers = workspace.Players.Killers
 
@@ -96,7 +97,7 @@ function Respawn()
     BodyGyro.Parent = Data.Root
     --
     if Data.Character.Parent.Name == "Killers" then
-        Data.Character.Parent = inMap() and workspace.Players.Survivors or workspace.Players.Spectating
+        Data.Character.Parent = inMap() and Survivors or Spectating
     end
     --connections
     table.insert(Connections, Ingame.ChildAdded:Connect(function(child)
