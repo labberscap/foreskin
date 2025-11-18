@@ -285,8 +285,8 @@ do
         Callback = function(Value)
             Flags.Visuals.ESP.Item = Value
             --
-            local inMap = inMap()
-            if inMap then
+            local isinMap = inMap()
+            if isinMap then
                 for i, v in Ingame.Map:GetChildren() do
                     if v.Name == "BloxyCola" or v.Name == "Medkit" then
                         if Value then
@@ -309,8 +309,8 @@ do
         Callback = function(Value)
             Flags.Visuals.ESP.Generator = Value
             --
-            local inMap = inMap()
-            if inMap then
+            local isinMap = inMap()
+            if isinMap then
                 for i, v in Ingame.Map:GetChildren() do
                     if v.Name == "Generator" then
                         if Value then
@@ -333,8 +333,8 @@ do
         Callback = function(Value)
             Flags.Visuals.ESP.Survivor = Value
             --
-            local inMap = inMap()
-            if inMap then
+            local isinMap = inMap()
+            if isinMap then
                 for i, v in Survivors:GetChildren() do
                     if v:IsA("Model") then
                         if Value then
@@ -357,8 +357,8 @@ do
         Callback = function(Value)
             Flags.Visuals.ESP.Killer = Value
             --
-            local inMap = inMap()
-            if inMap then
+            local isinMap = inMap()
+            if isinMap then
                 for i, v in Killers:GetChildren() do
                     if v:IsA("Model") then
                         if Value then
